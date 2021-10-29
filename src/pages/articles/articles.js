@@ -1,7 +1,5 @@
 const Articles = () => {
-  return (
-    <div>Articles</div>
-  )
-}
+  return <div>Articles</div>;
+};
 
 export default Articles;

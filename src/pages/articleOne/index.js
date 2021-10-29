@@ -1,3 +1,3 @@
-import ArticleOne from './articleOne';
+import ArticleOne from "./articleOne";
 
 export default ArticleOne;
