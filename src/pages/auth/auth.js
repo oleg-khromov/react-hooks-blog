@@ -1,70 +1,103 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, withRouter } from "react-router-dom";
-import { useFetch } from "../../hooks"
+import { Link, withRouter, Redirect } from "react-router-dom";
+import { useFetch, useLocalStorage } from "../../hooks";
 
 const Auth = ({ location }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const firstInputRef = useRef(null);
-  const [isLogin] = useState(location.path === "/login");
-  const titlePage = isLogin ? "Sign in" : "Sign up";
-  const linkPage = isLogin ? "Need an account?" : "Have an account?";
+  const isLogin = location.pathname === "/login";
+  const pageTitle = isLogin ? "Sign in" : "Sign up";
+  const descriptionText = isLogin ? "Need an account?" : "Have an account?";
+  const descriptionLink = isLogin ? "/registr" : "/login";
+  const apiUrl = isLogin ? "/users/login" : "/users";
 
-  const [{ data, isLoading, error }, doFech] = useFetch("/users/login");
+  const [{ data, isLoading, error }, doFech] = useFetch(apiUrl);
+  const [token, setToken] = useLocalStorage("token");
+
+  console.log(token, setToken);
 
   const handleChangeValue = (e, cb) => {
     cb(e.target.value);
-  }
+  };
 
-  console.log(data, isLoading, error)
+  console.log(data, isLoading, error);
 
   const handleChangeVisiblePassword = () => {
-    setIsVisiblePassword(isVisiblePassword => !isVisiblePassword);
-  }
+    setIsVisiblePassword((isVisiblePassword) => !isVisiblePassword);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const payload = {
-      user: {
-        email, password, name
-      }
-    };
-
+    const user = isLogin ? { email, password } : { email, password, username };
+    const payload = { user };
     doFech("post", payload);
-  }
+  };
 
   useEffect(() => {
-    firstInputRef.current.focus();
-  }, [])
+    firstInputRef.current?.focus();
+
+    setEmail("");
+    setPassword("");
+    setUsername("");
+  }, [isLogin]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    setToken(data.user.token);
+  }, [data]);
+
+  // if (data) {
+  //   return <Redirect to="/" />
+  // }
 
   return (
     <div className="auth">
-      <h1 className="text-center">{titlePage}</h1>
+      <h1 className="text-center">{pageTitle}</h1>
       <p className="text-center">
-        <Link to="/registr">{linkPage}</Link>
+        <Link to={descriptionLink}>{descriptionText}</Link>
       </p>
       <div className="row">
         <div className="col-md-6 offset-md-3 col-xs-12">
           <form onSubmit={handleSubmit}>
-            { !isLogin &&
+            {!isLogin && (
               <div className="row mb-3">
-                <label htmlFor="name" className="col-12 col-form-label">
-                  Name
+                <label htmlFor="username" className="col-12 col-form-label">
+                  Username
                 </label>
                 <div className="col-12">
-                  <input value={name} type="name" onChange={(e) => handleChangeValue(e, setName)} ref={firstInputRef} className="form-control" id="name" placeholder="Name"/>
+                  <input
+                    value={username}
+                    type="text"
+                    onChange={(e) => handleChangeValue(e, setUsername)}
+                    ref={firstInputRef}
+                    className="form-control"
+                    id="username"
+                    placeholder="Username"
+                  />
                 </div>
               </div>
-            }
+            )}
             <div className="row mb-3">
               <label htmlFor="email" className="col-12 col-form-label">
                 Email
               </label>
               <div className="col-12">
-                <input value={email} type="email" onChange={(e) => handleChangeValue(e, setEmail)} ref={!isLogin ? firstInputRef : null} className="form-control" id="email" placeholder="Email"/>
+                <input
+                  value={email}
+                  type="email"
+                  onChange={(e) => handleChangeValue(e, setEmail)}
+                  ref={isLogin ? firstInputRef : null}
+                  className="form-control"
+                  id="email"
+                  placeholder="Email"
+                />
               </div>
             </div>
             <div className="row mb-3">
@@ -72,13 +105,29 @@ const Auth = ({ location }) => {
                 Password
               </label>
               <div className="col-12 position-relative">
-                <input value={password} type={!isVisiblePassword ? "password" : "text"} onChange={(e) => handleChangeValue(e, setPassword)} className="form-control" id="password" placeholder="Password" />
-                <i className={`${isVisiblePassword ? "bi-eye" : "bi-eye-slash"} position-absolute top-50 translate-middle-y start-100`} onClick={handleChangeVisiblePassword} />
+                <input
+                  value={password}
+                  type={!isVisiblePassword ? "password" : "text"}
+                  onChange={(e) => handleChangeValue(e, setPassword)}
+                  className="form-control"
+                  id="password"
+                  placeholder="Password"
+                />
+                <i
+                  className={`${
+                    isVisiblePassword ? "bi-eye" : "bi-eye-slash"
+                  } position-absolute top-50 translate-middle-y start-100`}
+                  onClick={handleChangeVisiblePassword}
+                />
               </div>
             </div>
             <div className="row mb-0">
               <div className="col d-flex justify-content-end">
-                <button type="submit" className="btn btn-primary" disabled={(!name && !email && !password) || isLoading}>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={!username || !email || !password || isLoading}
+                >
                   Submit
                 </button>
               </div>

@@ -12,38 +12,38 @@ const useFetch = (url) => {
   const doFetch = (method = "get", data = {}) => {
     setOptions({
       method,
-      data
+      data,
     });
-    setIsLoading(isLoading => !isLoading);
+    setIsLoading((isLoading) => !isLoading);
   };
 
   useEffect(() => {
     if (!isLoading) {
       return;
     }
-    
+
     async function fetch() {
       try {
         const response = await axios(API_URL + url, options);
         setData(response.data);
-      } catch(error) {
+      } catch (error) {
         setError(error.response.data);
       } finally {
-        setIsLoading(isLoading => !isLoading);
+        setIsLoading((isLoading) => !isLoading);
       }
     }
 
     fetch();
-  }, [isLoading, url, options])
+  }, [isLoading, url, options]);
 
   return [
     {
       data,
       isLoading,
-      error
+      error,
     },
-    doFetch
-  ]
-}
+    doFetch,
+  ];
+};
 
 export default useFetch;
