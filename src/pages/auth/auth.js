@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { Link, withRouter, Redirect } from "react-router-dom";
 import { useFetch, useLocalStorage } from "../../hooks";
 import { CurrentUserContext } from "../../contexts/currentUser";
+import ErrorMessages from "./components/errorMessages";
 
 const Auth = ({ location }) => {
   const [email, setEmail] = useState("");
@@ -13,16 +14,17 @@ const Auth = ({ location }) => {
   const pageTitle = isLogin ? "Sign in" : "Sign up";
   const descriptionText = isLogin ? "Need an account?" : "Have an account?";
   const descriptionLink = isLogin ? "/registr" : "/login";
-  const apiUrl = isLogin ? "/users/login" : "/users";
+  const apiUrl = isLogin ? "users/login" : "users";
 
   const [{ data, isLoading, error }, doFech] = useFetch(apiUrl);
-  const [token, setToken] = useLocalStorage("token");
+  const [, setToken] = useLocalStorage("token");
 
   const [isSuccessfullSubmit, setIsSuccessfullSubmit] = useState(false);
 
   const [currentUserState, setCurrentUserState] =
     useContext(CurrentUserContext);
 
+  console.log("currentUserState", currentUserState);
   const handleChangeValue = (e, cb) => {
     cb(e.target.value);
   };
@@ -60,7 +62,7 @@ const Auth = ({ location }) => {
       currentUser: data.user,
     }));
     setIsSuccessfullSubmit((isSuccessfullSubmit) => !isSuccessfullSubmit);
-  }, [data, setToken, setUser]);
+  }, [data, setToken, setCurrentUserState]);
 
   if (isSuccessfullSubmit) {
     return <Redirect to="/" />;
@@ -75,6 +77,7 @@ const Auth = ({ location }) => {
       <div className="row">
         <div className="col-md-6 offset-md-3 col-xs-12">
           <form onSubmit={handleSubmit}>
+            {error && <ErrorMessages errors={error.errors} />}
             {!isLogin && (
               <div className="row mb-3">
                 <label htmlFor="username" className="col-12 col-form-label">
@@ -135,7 +138,7 @@ const Auth = ({ location }) => {
                 <button
                   type="submit"
                   className="btn btn-primary"
-                  disabled={!username || !email || !password || isLoading}
+                  disabled={!email || !password || isLoading}
                 >
                   Submit
                 </button>

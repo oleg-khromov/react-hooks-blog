@@ -5,16 +5,19 @@ import Routes from "./routes";
 import Header from "./components/header";
 import Main from "./containers/main";
 import CurrentUserProvider from "./contexts/currentUser";
+import CurrentUserChecker from "./components/currentUserChecker";
 
 ReactDOM.render(
   <React.StrictMode>
     <CurrentUserProvider>
-      <Router>
-        <Header />
-        <Main>
-          <Routes></Routes>
-        </Main>
-      </Router>
+      <CurrentUserChecker>
+        <Router>
+          <Header />
+          <Main>
+            <Routes></Routes>
+          </Main>
+        </Router>
+      </CurrentUserChecker>
     </CurrentUserProvider>
   </React.StrictMode>,
   document.getElementById("root")
