@@ -1,6 +1,10 @@
+import { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { CurrentUserContext } from "../contexts/currentUser";
 
 const Header = () => {
+  const [{ isLoggedIn, currentUser }] = useContext(CurrentUserContext);
+
   return (
     <header>
       <div className="container">
@@ -12,12 +16,31 @@ const Header = () => {
             <NavLink to="/" className="nav-link">
               Home
             </NavLink>
-            <NavLink to="/login" className="nav-link">
-              SignIn
-            </NavLink>
-            <NavLink to="/registr" className="nav-link">
-              SignUp
-            </NavLink>
+            {isLoggedIn === false && (
+              <>
+                <NavLink to="/login" className="nav-link">
+                  SignIn
+                </NavLink>
+                <NavLink to="/registr" className="nav-link">
+                  SignUp
+                </NavLink>
+              </>
+            )}
+            {isLoggedIn && (
+              <>
+                <NavLink to="/articles/new" className="nav-link">
+                  <i className="plus" />
+                  &nbsp; Add post
+                </NavLink>
+                <NavLink
+                  to={`/profile/${currentUser.username}}`}
+                  className="nav-link"
+                >
+                  <img src={currentUser.image} className="user-pic" />
+                  &nbsp; {currentUser.username}
+                </NavLink>
+              </>
+            )}
           </nav>
         </div>
       </div>
