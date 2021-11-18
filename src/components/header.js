@@ -36,7 +36,7 @@ const Header = () => {
                   to={`/profile/${currentUser.username}}`}
                   className="nav-link"
                 >
-                  <img src={currentUser.image} className="user-pic" />
+                  <img src={currentUser.image} className="user-pic" alt="" width="30px" height="30px"/>
                   &nbsp; {currentUser.username}
                 </NavLink>
               </>

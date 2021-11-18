@@ -1,7 +1,7 @@
-const Main = ({ children }) => {
+const Main = ({ children, ...rest }) => {
   return (
     <main>
-      <div className="container">{children}</div>
+      <div className="container" props={rest}>{children}</div>
     </main>
   );
 };

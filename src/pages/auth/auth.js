@@ -21,13 +21,10 @@ const Auth = ({ location }) => {
 
   const [isSuccessfullSubmit, setIsSuccessfullSubmit] = useState(false);
 
-  const [currentUserState, setCurrentUserState] =
+  const [{ isLoggedIn }, setCurrentUserState] =
     useContext(CurrentUserContext);
 
-  console.log("currentUserState", currentUserState);
-  const handleChangeValue = (e, cb) => {
-    cb(e.target.value);
-  };
+  const handleChangeValue = (e, cb) => cb(e.target.value);
 
   const handleChangeVisiblePassword = () => {
     setIsVisiblePassword((isVisiblePassword) => !isVisiblePassword);
@@ -55,16 +52,16 @@ const Auth = ({ location }) => {
     }
 
     setToken(data.user.token);
+    setIsSuccessfullSubmit((isSuccessfullSubmit) => !isSuccessfullSubmit);
     setCurrentUserState((state) => ({
       ...state,
-      isLoading: true,
-      isLoggedIn: false,
+      isLoading: false,
+      isLoggedIn: true,
       currentUser: data.user,
     }));
-    setIsSuccessfullSubmit((isSuccessfullSubmit) => !isSuccessfullSubmit);
   }, [data, setToken, setCurrentUserState]);
 
-  if (isSuccessfullSubmit) {
+  if (isSuccessfullSubmit || isLoggedIn) {
     return <Redirect to="/" />;
   }
 

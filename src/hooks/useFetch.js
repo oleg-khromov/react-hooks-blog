@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useLocalStorage } from "../hooks";
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 const useFetch = (url) => {
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,14 +20,14 @@ const useFetch = (url) => {
   }, []);
 
   useEffect(() => {
-    const headers = {
-      autorization: token ? `Token ${token}` : "",
-    };
-
     if (!isLoading) {
       return;
     }
 
+    const headers = {
+      authorization: token ? `Token ${token}` : "",
+    };
+    
     async function fetch() {
       try {
         const response = await axios(API_URL + url, { ...options, headers });
@@ -40,7 +40,7 @@ const useFetch = (url) => {
     }
 
     fetch();
-  }, [isLoading, url, options, token]);
+  }, [isLoading, url, options, token, API_URL]);
 
   return [
     {
